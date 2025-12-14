@@ -1,0 +1,20 @@
+#API配置
+OPENAI_API_KEY = 
+OPENAI_API_BASE = 
+MODEL_NAME = 
+OPENAI_EMBEDDING_MODEL = 
+
+# 数据目录配置
+DATA_DIR = 
+
+#向量数据库配置
+VECTOR_DB_PATH = "./vector_db"
+COLLECTION_NAME = 
+
+# 文本处理配置
+CHUNK_SIZE = 
+CHUNK_OVERLAP = 
+MAX_TOKENS = 
+
+# RAG配置
+TOP_K = 
