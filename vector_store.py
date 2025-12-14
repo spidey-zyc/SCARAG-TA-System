@@ -1,5 +1,6 @@
 import os
 from typing import List, Dict
+import uuid
 
 import chromadb
 from chromadb.config import Settings
@@ -48,7 +49,17 @@ class VectorStore:
         TODO: 使用OpenAI API获取文本的embedding向量
 
         """
-        pass
+        # 替换换行符以避免某些模型表现不佳
+        text = text.replace("\n", " ")
+        try:
+            response = self.client.embeddings.create(
+                input=[text],
+                model=OPENAI_EMBEDDING_MODEL
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            print(f"Error getting embedding: {e}")
+            return []
 
     def add_documents(self, chunks: List[Dict[str, str]]) -> None:
         """添加文档块到向量数据库
@@ -59,8 +70,56 @@ class VectorStore:
         3. 获取文档块元数据
         5. 打印添加进度
         """
-        pass
+        batch_size = 50  # 每次处理50条，避免API超时
+        
+# --- 第一步：准备数据 (速度很快，不需要进度条，或者简单打印) ---
+        ids = []
+        documents = []
+        metadatas = []
+        
+        print(f"正在准备 {len(chunks)} 条文档数据...")
+        for chunk in chunks:
+            # 构造元数据
+            meta = {
+                "filename": chunk["filename"],
+                "filetype": chunk["filetype"],
+                "page_number": chunk["page_number"],
+                "chunk_id": chunk["chunk_id"]
+            }
+            
+            # ChromaDB 需要唯一的ID，这里使用 uuid
+            ids.append(str(uuid.uuid4()))
+            documents.append(chunk["content"])
+            metadatas.append(meta)
 
+        # --- 第二步：分批调用 Embedding API 并存储 (这是最慢的步骤，加上进度条) ---
+        total_chunks = len(documents)
+        print("开始调用 Embedding API 并写入数据库...")
+        
+        # [关键修改] tqdm 加在这里，监控 API 调用进度
+        for i in tqdm(range(0, total_chunks, batch_size), desc="Embedding进度", unit="批"):
+            batch_docs = documents[i : i + batch_size]
+            batch_ids = ids[i : i + batch_size]
+            batch_metas = metadatas[i : i + batch_size]
+            
+            try:
+                # 1. 调用 OpenAI 获取向量
+                response = self.client.embeddings.create(
+                    input=batch_docs,
+                    model=OPENAI_EMBEDDING_MODEL
+                )
+                batch_embeddings = [data.embedding for data in response.data]
+                
+                # 2. 写入 ChromaDB
+                self.collection.add(
+                    ids=batch_ids,
+                    embeddings=batch_embeddings,
+                    documents=batch_docs,
+                    metadatas=batch_metas
+                )
+            except Exception as e:
+                print(f"\n[Error] 第 {i} 到 {i+batch_size} 条数据处理失败: {e}")
+                # 可以在这里选择 continue 跳过，或者 break 停止
     def search(self, query: str, top_k: int = TOP_K) -> List[Dict]:
         """搜索相关文档
 
@@ -74,7 +133,29 @@ class VectorStore:
         4. 返回格式化的结果列表
         """
 
-        pass
+        # 1. 获取查询向量
+        query_embedding = self.get_embedding(query)
+        if not query_embedding:
+            return []
+
+        # 2. 向量搜索
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k
+        )
+
+        # 3. 格式化结果
+        formatted_results = []
+        if results["documents"]:
+            # Chroma 返回的是列表的列表
+            for i in range(len(results["documents"][0])):
+                formatted_results.append({
+                    "content": results["documents"][0][i],
+                    "metadata": results["metadatas"][0][i],
+                    "score": results["distances"][0][i] if "distances" in results else 0
+                })
+        
+        return formatted_results
 
     def clear_collection(self) -> None:
         """清空collection"""
