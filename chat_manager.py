@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List, Dict, Optional
 
 # 你的对话存储目录
-CHAT_DIR = "/Users/fangjie/Documents/code/RAG-programs/chat"
+CHAT_DIR =os.path.join(".", "chat")
 
 class ChatManager:
     def __init__(self):

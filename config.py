@@ -1,10 +1,10 @@
 # config.py
-
+import os
 # ==========================================
 # 1. 文本模型配置 (纯文本对话时使用)
 # ==========================================
 # 使用你原有的 Key (用于 Embedding 和 文本模型)
-OPENAI_API_KEY = "sk-341246dceaac45bdb7e7ac330b041cba" 
+OPENAI_API_KEY = "sk-24b2138e84ea4663880e118b93a06ade"
 OPENAI_API_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 # 文本模型名称 (纯文本输入时使用 qwen-max)
@@ -27,10 +27,10 @@ VISION_MODEL_NAME = "qwen-vl-plus"
 # 3. 其他常规配置
 # ==========================================
 # 数据目录配置
-DATA_DIR = "./data"
+DATA_DIR = os.path.join(".", "data")
 
 # 向量数据库配置
-VECTOR_DB_PATH = "./vector_db"
+VECTOR_DB_PATH = os.path.join(".", "vector_db")
 COLLECTION_NAME = "data_structure"
 
 # 文本处理配置

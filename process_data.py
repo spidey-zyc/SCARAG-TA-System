@@ -6,7 +6,7 @@ from vector_store import VectorStore
 from config import DATA_DIR, CHUNK_SIZE, CHUNK_OVERLAP, VECTOR_DB_PATH
 
 # 你的基础数据路径
-BASE_DATA_DIR = "/Users/fangjie/Documents/code/RAG-programs/data"
+BASE_DATA_DIR = os.path.join(".", "data")
 
 def main():
     # 1. 解析参数

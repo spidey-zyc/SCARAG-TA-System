@@ -38,8 +38,8 @@ WELCOME_HTML = textwrap.dedent("""
 """).strip()
 
 # === 配置区 ===
-BASE_DATA_PATH = "/Users/fangjie/Documents/code/RAG-programs/data"
-PROCESS_SCRIPT_PATH = "/Users/fangjie/Documents/code/RAG-programs/process_data.py"
+BASE_DATA_PATH = os.path.join(".", "data")
+PROCESS_SCRIPT_PATH = os.path.join(".", "process_data.py")
 
 os.makedirs(BASE_DATA_PATH, exist_ok=True)
 
