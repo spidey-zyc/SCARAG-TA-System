@@ -104,7 +104,7 @@ pip install -r requirements.txt
 
 将 PDF/PPT 放入 `data/您的主题名/` 目录下，然后运行：
 
-```
+```python
 # 例如处理计算机网络主题
 python process_data.py --theme computer_network --incremental
 ```
@@ -113,7 +113,7 @@ python process_data.py --theme computer_network --incremental
 
 ### 4. 启动应用
 
-```
+```python
 chainlit run app_cl.py -w
 ```
 
