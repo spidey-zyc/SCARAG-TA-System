@@ -84,7 +84,8 @@ class VectorStore:
                 "filename": chunk["filename"],
                 "filetype": chunk["filetype"],
                 "page_number": chunk["page_number"],
-                "chunk_id": chunk["chunk_id"]
+                "chunk_id": chunk["chunk_id"],
+                "image_path": chunk.get("image_path", "") 
             }
             
             # ChromaDB 需要唯一的ID，这里使用 uuid

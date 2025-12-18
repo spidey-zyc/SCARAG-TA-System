@@ -1,0 +1,12 @@
+文件: 第二章 线性表-上.pptx
+页码: 7
+
+--- 幻灯片 7 ---
+Data: { xi | xi ElemSet, i=1,2,3,……n, n > 0} 或 Φ; ElemSet为元素集合。
+Relation: {<xi,xi+1>|xi,xi+1ElemSet, i=1,2,3,……n-1}, 
+                          x1为首元素，xn为尾元素。
+Operations:
+     initialize	前提:	无或指定List 的规模。结果:	分配相应空间及初始化。
+     isEmpty	前提：无    	结果：表List 为空返回true，否则返回false。
+     isFull       前提：无	结果：表List 为满返回true，否则返回false。
+线性表List的ADT ：描述关系和关系操作
