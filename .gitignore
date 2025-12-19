@@ -1,1 +1,15 @@
 chat/
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 数据库文件 (不要上传！)
+vector_db/
+chroma_db/
+data/
+
+# 系统文件
+.DS_Store
+
+# 环境变量
+.env

@@ -413,18 +413,55 @@ async def main(message: cl.Message):
     if image_analysis_content:
         final_query += f"\n详细背景：{image_analysis_content}"
 
+    # async with cl.Step(name="SCARAG 思考中...", type="tool") as step:
+    #     step.input = final_query
+    #     context_str, results = await cl.make_async(agent.retrieve_context)(final_query)              
+
+        
+    #     # === 核心修改：可视化检索结果 ===
+    #     elements = []
+    #     detail_text = ""
+        
+    #     for i, res in enumerate(results):
+    #         meta = res['metadata']
+    #         score = res.get('score', 0)
+            
+    #         # 构建文本详情
+    #         detail_text += f"### 来源 {i+1}: {meta['filename']}\n"
+    #         detail_text += f"```text\n{res['content'][:200]}...\n```\n"
+            
+    #         # 检查是否有图片路径
+    #         img_path = meta.get("image_path")
+    #         if img_path and img_path.strip():
+    #             # img_path 是类似 "./static/images/theme/xxx.png"
+    #             # Chainlit Image 组件可以直接读取本地路径
+                
+    #             # 为了在 Step 中展示，我们使用 cl.Image
+    #             # 注意 name 必须唯一
+    #             image_name = f"image_source_{i}"
+    #             try:
+    #                 # 将图片添加到 elements
+    #                 elements.append(
+    #                     cl.Image(path=img_path, name=image_name, display="inline")
+    #                 )
+    #                 detail_text += f"**[已加载关联图片: {image_name}]**\n\n"
+    #             except Exception as e:
+    #                 print(f"加载图片失败: {e}")
+    #         else:
+    #             detail_text += "\n"
+
+
     async with cl.Step(name="SCARAG 思考中...", type="tool") as step:
         step.input = final_query
         context_str, results = await cl.make_async(agent.retrieve_context)(final_query)              
 
-        
         # === 核心修改：可视化检索结果 ===
         elements = []
         detail_text = ""
+        seen_images = set() # [新增] 用于去重，防止同一张图显示多次
         
         for i, res in enumerate(results):
             meta = res['metadata']
-            score = res.get('score', 0)
             
             # 构建文本详情
             detail_text += f"### 来源 {i+1}: {meta['filename']}\n"
@@ -432,19 +469,23 @@ async def main(message: cl.Message):
             
             # 检查是否有图片路径
             img_path = meta.get("image_path")
-            if img_path and img_path.strip():
-                # img_path 是类似 "./static/images/theme/xxx.png"
-                # Chainlit Image 组件可以直接读取本地路径
+            
+            # 🔥【修改点】新增判断条件：
+            # 1. i < 3 : 只有前 3 名允许带图
+            # 2. img_path not in seen_images : 防止重复图片刷屏
+            if (i < 3 
+                and img_path and img_path.strip() 
+                and img_path not in seen_images):
                 
-                # 为了在 Step 中展示，我们使用 cl.Image
-                # 注意 name 必须唯一
-                image_name = f"image_source_{i}"
+                # 使用 len(seen_images) 来命名，保证顺序
+                image_name = f"参考图_{len(seen_images)+1}"
                 try:
                     # 将图片添加到 elements
                     elements.append(
                         cl.Image(path=img_path, name=image_name, display="inline")
                     )
-                    detail_text += f"**[已加载关联图片: {image_name}]**\n\n"
+                    seen_images.add(img_path) # [新增] 记录已展示的图片
+                    detail_text += f"**[🖼️ 已加载关联图片: {image_name}]**\n\n"
                 except Exception as e:
                     print(f"加载图片失败: {e}")
             else:

@@ -114,7 +114,8 @@ python process_data.py --theme computer_network --incremental
 ### 4. 启动应用
 
 ```python
-chainlit run app_cl.py -w
+chainlit run app_cl.py #-w开发时使用
+
 ```
 
 ## 🔧 常见问题 (FAQ)
