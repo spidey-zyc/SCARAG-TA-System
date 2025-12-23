@@ -5,11 +5,18 @@ __pycache__/
 
 # 数据库文件 (不要上传！)
 vector_db/
+vector_db_2/
 chroma_db/
 data/
+static/
+data_origin
 
 # 系统文件
 .DS_Store
 
 # 环境变量
 .env
+
+simulate_search.py
+
+inspect_db.py

@@ -18,11 +18,11 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def process_images_with_vision_model(chunks):
+def process_images_with_vision_model(chunks,theme_name):
     """
     遍历文档块，找到图片块，调用视觉模型生成描述
     """
-    agent = RAGAgent() # 实例化以使用其中的 vision_client
+    agent = RAGAgent(initial_theme=theme_name) # 实例化以使用其中的 vision_client
     processed_chunks = []
     
     print("\n👁️ 正在进行图片语义分析与描述生成 (这可能需要一些时间)...")
@@ -141,7 +141,7 @@ def main():
             image_chunks_formatted.append(img_doc)
         
         if image_chunks_formatted:
-            processed_imgs = process_images_with_vision_model(image_chunks_formatted)
+            processed_imgs = process_images_with_vision_model(image_chunks_formatted,theme_name=theme_name)
             all_chunks.extend(processed_imgs)
     else:
         print("⏩ [Vision Mode] 跳过图片处理 (将在后台运行)")
