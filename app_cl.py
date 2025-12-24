@@ -129,19 +129,21 @@ async def start():
     # 1. 初始化列表，用于追踪屏幕上的消息ID
     cl.user_session.set("msg_ids", [])
     
-    agent = RAGAgent()
+    
     chat_manager = ChatManager()
     
     # 【关键修改】不立即创建新会话，设为 None
     chat_manager.current_filename = None
     chat_manager.current_chat_name = "New Chat"
     
-    cl.user_session.set("agent", agent)
     cl.user_session.set("chat_manager", chat_manager)
     
     existing_themes = get_themes()
     default_theme = existing_themes[0] if existing_themes else "Default"
     cl.user_session.set("current_theme", default_theme)
+
+    agent = RAGAgent(default_theme)
+    cl.user_session.set("agent", agent)
     
     # 2. 显示欢迎页
     raw_html = WELCOME_HTML 
@@ -501,6 +503,9 @@ async def main(message: cl.Message):
                 detail_text += "\n"
 
         step.output = f"检索到 {len(results)} 条资料"
+
+        if not detail_text.strip():
+            detail_text = "未检索到相关文档内容，将尝试使用通用知识回答。"
         
         # 将详情文本放在开头
         elements.insert(0, cl.Text(name="检索详情", content=detail_text, display="inline"))

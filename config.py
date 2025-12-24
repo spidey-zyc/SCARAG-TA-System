@@ -4,7 +4,7 @@ import os
 # 1. 文本模型配置 (纯文本对话时使用)
 # ==========================================
 # 使用你原有的 Key (用于 Embedding 和 文本模型)
-OPENAI_API_KEY = "sk-24b2138e84ea4663880e118b93a06ade"
+OPENAI_API_KEY = "sk-4cbc56e56f164c02a63563e9462e271f"
 OPENAI_API_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 # 文本模型名称 (纯文本输入时使用 qwen-max)
